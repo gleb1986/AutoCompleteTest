@@ -1,0 +1,44 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "title";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>title</h2>
+<input type="text" value ="" id="myInput"/>
+
+@section scripts
+{
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script>
+
+        $(document).ready(function() {
+            BindControls();
+        });
+
+        function BindControls() {
+            $("#myInput").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "WebService1.asmx/ShowCustomer",
+                        data: "{ 'sLookUP': '" + request.term + "' }",
+                        dataType: "json",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        dataFilter: function(data) { return data; },
+                        success: function(data) {
+                            response($.map(data.d, function(item) {
+                                return { value: item }
+                            }))
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert(textStatus);
+                        }
+                    });
+                },
+                minLength: 1    // MINIMUM 1 CHARACTER TO START WITH.
+            });
+        }
+    </script>
+}
